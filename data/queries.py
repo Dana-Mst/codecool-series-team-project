@@ -7,7 +7,7 @@ def get_shows():
 
 def most_rated_shows(offset):
     query = """
-    SELECT shows.id, shows.title, shows.runtime,  shows.rating,
+    SELECT shows.id, shows.title, shows.runtime, shows.rating,
     ARRAY_AGG(genres.name) AS genres, shows.trailer, shows.homepage
     FROM shows
     LEFT JOIN show_genres
@@ -19,4 +19,11 @@ def most_rated_shows(offset):
     OFFSET %s
     LIMIT 15;
     """
-    return data_manager.execute_select(query, (offset, ))
+    data = data_manager.execute_select(query, (offset, ))
+
+    for index, item in enumerate(data) :
+        data[index]["rating"] = str(round(item["rating"], 1)) +  " ☆"
+
+    return data
+
+
