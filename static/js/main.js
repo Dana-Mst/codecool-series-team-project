@@ -1,5 +1,10 @@
 import { dataHandler } from './data_handler.js';
 
+let page_number = 1;
+let next = document.querySelector('.next');
+let previous = document.querySelector('.previous');
+let showCurrentPage = document.querySelector('.current-page') 
+
 function displayShows(data) {  
   let indexWrapper = document.querySelector('.index-wrapper');
   if (indexWrapper) {
@@ -17,6 +22,7 @@ function displayShows(data) {
 
 function displayMostRatedShows(data) {
   let mostRatedWrapper = document.querySelector('.most-rated-wrapper');
+  mostRatedWrapper.innerHTML = "";
   if (mostRatedWrapper) {
     let tableWrapper = document.createElement('div');
     tableWrapper.classList.add('card');
@@ -44,14 +50,30 @@ function displayMostRatedShows(data) {
     tableHeader.appendChild(tableHeaderRow);
     table.appendChild(tableHeader);
     let tableBody = document.createElement('tbody');
+    let realtrailer;
+    let realhomepage;
     data.forEach((element) => {
+      if(element.trailer){
+    
+        realtrailer = element.trailer;
+   
+      }else{
+        realtrailer = `NO URL`;
+      };
+      if(element.homepage){
+       realhomepage = element.homepage;
+      
+      }else{
+       realhomepage = `NO URL`;
+      };
         let tableBodyRow = `
         <tr>
-        <td>${element.title}</td>
+        <td><a href="/show/${element.id}">${element.title}</a></td>
         <td>${element.runtime}</td>
         <td>${element.rating}</td>
         <td>${element.genres}</td>
-        <td>${element.trailer}</td><td>${element.homepage}</td>
+        <td><a href="${realtrailer}">${realtrailer}</a></td>
+        <td><a href="${realhomepage}">${realhomepage}</a></td>
         <td class="action-column">
         <button type="button" class="icon-button"><i class="fa fa-edit fa-fw"></i></button>
         <button type="button" class="icon-button"><i class="fa fa-trash fa-fw"></i></button>
@@ -67,6 +89,46 @@ function displayMostRatedShows(data) {
 }
 
 
+function buttonVis(){
+  if(page_number == 1){
+    previous.style.visibility = 'hidden' 
+  }else{
+    previous.style.visibility = 'visible'
+  }
+
+  if(page_number == 68){
+    next.style.visibility = 'hidden'
+  }else{
+    next.style.visibility = 'visible'
+  }
+
+  showCurrentPage.innerText = page_number;
+}
+
+previous.addEventListener('click', ()=>{
+  if(page_number > 1){
+    page_number = page_number-1;
+ 
+    dataHandler.apiGet(`/get-15-most-rated/${page_number}`, (data) => {
+    displayMostRatedShows(data);
+    });
+
+  }
+  buttonVis()
+})
+
+
+next.addEventListener('click', ()=>{
+  if(page_number < 68){
+    page_number = page_number+1;
+   
+    dataHandler.apiGet(`/get-15-most-rated/${page_number}`, (data) => {
+    displayMostRatedShows(data);
+    });
+
+  }
+  buttonVis()
+})
 
 dataHandler.apiGet('/get-shows', (data) => {
   displayShows(data);
@@ -75,72 +137,17 @@ dataHandler.apiGet('/get-shows', (data) => {
 
 dataHandler.apiGet('/get-15-most-rated/1', (data) => {
   displayMostRatedShows(data);
+  buttonVis()
 });
 
 
-  /* <div class="card">
-            This is an example for a table:
-            <table>
-                <thead>
-                <tr>
-                    <th>a</th>
-                    <th>b</th>
-                    <th>c</th>
-                    <th>d</th>
-                    <th class="action-column">e</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>Lorem</td>
-                    <td>Ipsum</td>
-                    <td>Dolor</td>
-                    <td>Sit amet</td>
-                    <td class="action-column">
-                        <button type="button" class="icon-button"><i class="fa fa-edit fa-fw"></i></button>
-                        <button type="button" class="icon-button"><i class="fa fa-trash fa-fw"></i></button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Lorem</td>
-                    <td>Ipsum</td>
-                    <td>Dolor</td>
-                    <td>Sit amet</td>
-                    <td class="action-column">
-                        <button type="button" class="icon-button"><i class="fa fa-edit fa-fw"></i></button>
-                        <button type="button" class="icon-button"><i class="fa fa-trash fa-fw"></i></button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Lorem</td>
-                    <td>Ipsum</td>
-                    <td>Dolor</td>
-                    <td>Sit amet</td>
-                    <td class="action-column">
-                        <button type="button" class="icon-button"><i class="fa fa-edit fa-fw"></i></button>
-                        <button type="button" class="icon-button"><i class="fa fa-trash fa-fw"></i></button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Lorem</td>
-                    <td>Ipsum</td>
-                    <td>Dolor</td>
-                    <td>Sit amet</td>
-                    <td class="action-column">
-                        <button type="button" class="icon-button"><i class="fa fa-edit fa-fw"></i></button>
-                        <button type="button" class="icon-button"><i class="fa fa-trash fa-fw"></i></button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Lorem</td>
-                    <td>Ipsum</td>
-                    <td>Dolor</td>
-                    <td>Sit amet</td>
-                    <td class="action-column">
-                        <button type="button" class="icon-button"><i class="fa fa-edit fa-fw"></i></button>
-                        <button type="button" class="icon-button"><i class="fa fa-trash fa-fw"></i></button>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div> */
+{/* <div class="pagination">
+  <a href="#">&laquo;</a>
+  <a href="#">1</a>
+  <a href="#">2</a>
+  <a href="#">3</a>
+  <a href="#">4</a>
+  <a href="#">5</a>
+  <a href="#">6</a>
+  <a href="#">&raquo;</a>
+</div> */}
