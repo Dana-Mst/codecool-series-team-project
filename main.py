@@ -25,11 +25,11 @@ def most_rated_shows():
     return render_template('most-rated.html')
 
 
-@app.route('/get-15-most-rated/<int:page_number>')
+@app.route('/get-15-most-rated/<int:page_number>/<column>/<direction>')
 @json_response
-def get_15_most_rated(page_number):
+def get_15_most_rated(page_number, column, direction):
     offset = (page_number*15) - 15
-    get_15_most_rated = queries.most_rated_shows(offset)
+    get_15_most_rated = queries.most_rated_shows(offset, column, direction)
     return get_15_most_rated
 
 
