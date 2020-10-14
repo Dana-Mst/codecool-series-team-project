@@ -33,9 +33,26 @@ def get_15_most_rated(page_number, column, direction):
     return get_15_most_rated
 
 
-@app.route('/design')
-def design():
-    return render_template('design.html')
+@app.route('/show/<int:id>')
+def display_show(id):
+    return render_template('show.html')
+
+
+@app.route('/single-show/<int:id>')
+@json_response
+def get_single_show(id):
+    seasons = queries.get_seasons(id)
+    actors = queries.get_actors(id)
+    show = queries.get_single_show(id)
+    data = {}
+    data["seasons"] = seasons
+    data['actors'] = actors
+    data['show'] = show
+    return data
+
+# @app.route('/design')
+# def design():
+#     return render_template('design.html')
 
 
 def main():

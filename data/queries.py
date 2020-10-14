@@ -48,4 +48,42 @@ def most_rated_shows(offset, sorting_column, sorting_direction):
 
     return data
 
+def get_single_show(id):
+    query = """
+    SELECT shows.id, shows.title, shows.year, shows.runtime,
+        shows.rating, shows.overview,
+        array_agg(genres.name) as genres,
+        shows.trailer, shows.homepage
+        FROM shows
+        LEFT JOIN show_genres
+        ON shows.id = show_genres.show_id
+        LEFT JOIN genres
+        ON show_genres.genre_id = genres.id
+        WHERE shows.id = %s
+        GROUP BY shows.id
+    """
+    data = data_manager.execute_select(query, (id, ))
+    
+    for index, item in enumerate(data):
+        data[index]["rating"] = str(round(item["rating"], 1)) + " ☆"
+        data[index]["year"] = item['year'].strftime('%Y')
 
+    return data
+
+def get_seasons(id):
+    query= """
+    SELECT * FROM seasons
+    WHERE show_id = %s
+    """
+    return data_manager.execute_select(query, (id, ))
+
+def get_actors(id):
+    query= """
+    SELECT actors.name 
+    FROM show_characters
+    JOIN actors
+    ON show_characters.actor_id = actors.id
+    WHERE show_id = %s
+    LIMIT 3
+    """
+    return data_manager.execute_select(query, (id, ))
