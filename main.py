@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for
+from flask import Flask, render_template, url_for, request
 from data import queries
 import math
 from dotenv import load_dotenv
@@ -49,6 +49,20 @@ def get_single_show(id):
     data['actors'] = actors
     data['show'] = show
     return data
+
+
+@app.route('/register', methods=["GET", "POST"])
+def register():
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get('password')
+        confirmed_password = request.form.get("confirm-password")
+        check_if_user_allready_exists = queries.verify_user_if_exists(username)
+        if not check_if_user_allready_exists:
+            pass
+
+    return render_template('register.html')
+
 
 # @app.route('/design')
 # def design():
