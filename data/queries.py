@@ -100,3 +100,11 @@ def verify_user_if_exists(username):
     WHERE username = %s;
     """
     return data_manager.execute_select(query, (username, ))
+
+
+def add_user(username, hashed_password):
+    query = """
+        INSERT INTO users (username, password)
+        VALUES (%s, %s);
+        """
+    data_manager.execute_dml_statement(query, (username, hashed_password, ))

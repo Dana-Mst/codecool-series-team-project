@@ -1,8 +1,9 @@
-from flask import Flask, render_template, url_for, request
+from flask import Flask, render_template, url_for, request, redirect
 from data import queries
 import math
 from dotenv import load_dotenv
 from util import json_response
+from password_manager import hash_password, verify_password
 
 load_dotenv()
 app = Flask('codecool_series')
@@ -59,9 +60,33 @@ def register():
         confirmed_password = request.form.get("confirm-password")
         check_if_user_allready_exists = queries.verify_user_if_exists(username)
         if not check_if_user_allready_exists:
-            pass
+            if password == confirmed_password:
+                hashed_password = hash_password(password)
+                queries.add_user(username, hashed_password)
+
+            else:
+                print("Password does not match. Please, try again")
+        else:
+            print("Please choose another username")
 
     return render_template('register.html')
+
+
+@app.route('/login', methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get('password')
+        check_if_user_exists_in_database = queries.verify_user_if_exists(
+            username)
+        if check_if_user_exists_in_database:
+            if verify_password(password, check_if_user_exists_in_database[0]['password']):
+                return redirect('/')
+            else:
+                print("password or username are not correct!")
+        else:
+            print("password or username are not correct!")
+    return render_template('login.html')
 
 
 # @app.route('/design')
